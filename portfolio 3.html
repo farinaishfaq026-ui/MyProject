@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farina Verse — Senior Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: { 950: '#030014', 900: '#0a0a12', 800: '#13131f', 700: '#1c1c2e' },
+                        brand: { 400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed' },
+                        cyan: { 500: '#06b6d4', 600: '#0891b2' },
+                        rose: { 500: '#f472b6', 600: '#ec4899' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        body { background-color: #030014; color: #f8fafc; overflow-x: hidden; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a12; }
+        ::-webkit-scrollbar-thumb { background: #2d2d42; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8b5cf6; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @supports (animation-timeline: scroll()) {
+            .reveal { animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-timeline: view(); animation-range-start: cover 0%; animation-range-end: cover 12%; }
+        }
+        @supports not (animation-timeline: scroll()) {
+            .reveal { opacity: 0; animation: fadeInUp 0.7s forwards; }
+        }
+
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes pulse-slow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+        .glass { background: rgba(19, 19, 31, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .text-gradient { background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%); background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ===== Project Cards ===== */
+        .project-card .overlay { opacity: 0; transition: all 0.45s ease; background: linear-gradient(to top, rgba(3,0,20,0.95) 0%, rgba(3,0,20,0.4) 50%, transparent 100%); }
+        .project-card:hover .overlay { opacity: 1; }
+        .project-card img { transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), filter 0.7s ease; }
+        .project-card:hover img { transform: scale(1.08); }
+        .live-demo-btn { opacity: 0; transform: translateY(16px); transition: all 0.4s ease 0.08s; }
+        .project-card:hover .live-demo-btn { opacity: 1; transform: translateY(0); }
+        .live-demo-btn:hover { background: #fff !important; color: #000 !important; box-shadow: 0 0 30px rgba(255,255,255,0.4); }
+
+        /* Static card hover border */
+        .card-static { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-static:hover { border-color: rgba(6, 182, 212, 0.4) !important; box-shadow: 0 8px 40px -8px rgba(6, 182, 212, 0.15), 0 0 0 1px rgba(6, 182, 212, 0.1); }
+
+        /* Dynamic card hover border */
+        .card-dynamic { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-dynamic:hover { border-color: rgba(244, 114, 182, 0.4) !important; box-shadow: 0 8px 40px -8px rgba(244, 114, 182, 0.15), 0 0 0 1px rgba(244, 114, 182, 0.1); }
+
+        /* Badges */
+        .badge-static { background: rgba(6, 182, 212, 0.15); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.25); }
+        .badge-dynamic { background: rgba(244, 114, 182, 0.15); color: #f9a8d4; border: 1px solid rgba(244, 114, 182, 0.25); }
+
+        /* Section divider line */
+        .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); }
+
+        /* Mobile Menu */
+        #menu-check { display: none; }
+        .mobile-menu { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+        #menu-check:checked ~ .mobile-menu { transform: translateX(0); }
+        #menu-check:checked ~ .menu-icon .fa-bars { display: none; }
+        #menu-check:checked ~ .menu-icon .fa-xmark { display: block; }
+        .menu-icon .fa-xmark { display: none; }
+
+        /* Toast */
+        .toast-el { transform: translateY(100px); opacity: 0; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+        .toast-el.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+        .form-input:focus { border-color: #8b5cf6; box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12); background: rgba(255, 255, 255, 0.03); }
+
+        /* Social Icons */
+        .social-icon { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .social-icon:hover { transform: translateY(-4px); color: white; border-color: transparent; box-shadow: 0 8px 20px -4px rgba(0,0,0,0.5); }
+        .social-icon.fa-tiktok:hover { background: #000; }
+        .social-icon.fa-instagram:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .social-icon.fa-facebook:hover { background: #1877F2; }
+        .social-icon.fa-linkedin:hover { background: #0077b5; }
+        .social-icon.fa-github:hover { background: #fff; color: #000; }
+        .social-icon.fa-fiverr:hover { background: #1dbf73; }
+        .social-icon.fa-upwork:hover { background: #6FDA44; color: #000; }
+
+        /* Stagger animation for cards */
+        .stagger-card { opacity: 0; transform: translateY(30px); }
+        .stagger-card.visible { animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-500 selection:text-white">
+
+    <input type="checkbox" id="menu-check">
+
+    <!-- Background -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-brand-600/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[100px]"></div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast-el fixed bottom-8 right-8 z-50 glass text-white px-6 py-5 rounded-2xl shadow-2xl flex items-center gap-4 border-l-4 border-l-green-500">
+        <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center"><i class="fa-solid fa-check text-green-500"></i></div>
+        <div><h4 class="font-bold text-white">Message Sent!</h4><p class="text-xs text-zinc-400 mt-1">I'll get back to you shortly.</p></div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <label for="menu-check" class="mobile-menu fixed inset-0 bg-dark-950/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-8">
+        <a href="#hero" onclick="document.getElementById('menu-check').checked=false" class="text-4xl font-display font-bold text-white hover:text-brand-400 transition-colors">Home</a>
+        <a href="#about" onclick="document.getElementById('menu-check').checked=false" class="text-4xl font-display font-bold text-white hover:text-brand-400 transition-colors">About</a>
+        <a href="#portfolios" onclick="document.getElementById('menu-check').checked=false" class="text-4xl font-display font-bold text-white hover:text-brand-400 transition-colors">Portfolios</a>
+        <a href="#services" onclick="document.getElementById('menu-check').checked=false" class="text-4xl font-display font-bold text-white hover:text-brand-400 transition-colors">Services</a>
+        <a href="#contact" onclick="document.getElementById('menu-check').checked=false" class="mt-4 px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform">Hire Me</a>
+    </label>
+
+    <!-- Nav -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 glass border-b-0">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2.5 group">
+                <div class="w-10 h-10 bg-gradient-to-tr from-brand-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 group-hover:shadow-brand-500/40 transition-all"><img src="Logo.png"></div>
+                <span class="text-white font-display font-bold text-xl tracking-tight hidden sm:block">Farina Verse</span>
+            </a>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#about" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-200">About</a>
+                <a href="#portfolios" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-200">Portfolios</a>
+                <a href="#services" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-200">Services</a>
+                <a href="#contact" class="px-5 py-2.5 bg-white/10 border border-white/10 text-white text-sm font-semibold rounded-full hover:bg-brand-600 hover:border-brand-600 transition-all duration-300">Contact</a>
+            </div>
+            <label for="menu-check" class="menu-icon md:hidden cursor-pointer w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-zinc-300">
+                <i class="fa-solid fa-bars"></i><i class="fa-solid fa-xmark"></i>
+            </label>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+
+        <!-- ===== HERO ===== -->
+        <section id="hero" class="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8 z-10">
+                    <div class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/20">
+                        <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                        <span class="text-xs font-bold uppercase tracking-widest text-brand-300">Available for Projects</span>
+                    </div>
+                    <h1 class="reveal font-display font-black text-6xl sm:text-7xl lg:text-8xl leading-[1.05] text-white">
+                        Building the <br><span class="text-gradient">Future Web</span>
+                    </h1>
+                    <p class="reveal text-zinc-400 text-lg md:text-xl max-w-lg leading-relaxed">Senior Full-Stack Developer & UI Designer. I transform complex problems into beautiful, scalable, and high-performance digital products.</p>
+                    <div class="reveal flex flex-wrap gap-4 pt-4">
+                        <a href="#portfolios" class="px-8 py-4 bg-brand-600 text-white font-bold text-sm rounded-full hover:bg-brand-500 hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] transition-all flex items-center gap-2">View Work <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="#contact" class="px-8 py-4 bg-transparent border border-white/20 text-white font-bold text-sm rounded-full hover:bg-white/10 transition-all">Contact Me</a>
+                    </div>
+                </div>
+                <div class="reveal hidden lg:block relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-brand-600 to-pink-600 rounded-3xl blur-[80px] opacity-30 animate-pulse"></div>
+                    <div class="relative glass rounded-3xl p-8 border border-white/10 shadow-2xl animate-float max-w-md mx-auto">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-red-500"></div><div class="w-3 h-3 rounded-full bg-yellow-500"></div><div class="w-3 h-3 rounded-full bg-green-500"></div></div>
+                            <span class="text-xs font-mono text-zinc-500">config.json</span>
+                        </div>
+                        <div class="font-mono text-sm text-zinc-300 leading-loose">
+                            <span class="text-pink-400">"developer"</span>: {<br>
+                            <span class="pl-4 text-blue-400">"name"</span>: <span class="text-green-400">"Farina Verse"</span>,<br>
+                            <span class="pl-4 text-blue-400">"skills"</span>: [<br>
+                            <span class="pl-8 text-green-400">"React"</span>, <span class="text-green-400">"Node.js"</span>, <span class="text-green-400">"UI/UX"</span><br>
+                            <span class="pl-4">],<br>
+                            <span class="pl-4 text-blue-400">"status"</span>: <span class="text-purple-400">"Ready to Hire"</span><br>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Marquee -->
+        <section class="py-5 border-y border-white/5 bg-white/[0.03] overflow-hidden">
+            <div class="flex items-center gap-10 whitespace-nowrap animate-[marquee_25s_linear_infinite] opacity-30 hover:opacity-80 transition-opacity">
+                <span class="text-2xl font-display font-bold text-white">REACT</span><span class="text-white/20">★</span>
+                <span class="text-2xl font-display font-bold text-white">NEXT.JS</span><span class="text-white/20">★</span>
+                <span class="text-2xl font-display font-bold text-white">TYPESCRIPT</span><span class="text-white/20">★</span>
+                <span class="text-2xl font-display font-bold text-white">TAILWIND</span><span class="text-white/20">★</span>
+                <span class="text-2xl font-display font-bold text-white">NODE.JS</span><span class="text-white/20">★</span>
+                <span class="text-2xl font-display font-bold text-white">FIGMA</span><span class="text-white/20">★</span>
+                <span class="text-2xl font-display font-bold text-white">REACT</span><span class="text-white/20">★</span>
+                <span class="text-2xl font-display font-bold text-white">NEXT.JS</span><span class="text-white/20">★</span>
+                <span class="text-2xl font-display font-bold text-white">TYPESCRIPT</span><span class="text-white/20">★</span>
+            </div>
+        </section>
+
+        <!-- ===== ABOUT ===== -->
+        <section id="about" class="py-24 relative">
+            <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal relative order-2 lg:order-1">
+                    <div class="absolute inset-0 bg-brand-600/20 rounded-3xl blur-2xl"></div>
+                    <img src="Web.PNG" alt="Farina" class="relative rounded-3xl border border-white/10 shadow-2xl w-full object-cover grayscale hover:grayscale-0 transition-all duration-700">
+                </div>
+                <div class="reveal order-1 lg:order-2 space-y-6">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-brand-400">About Me</h2>
+                    <h3 class="text-4xl md:text-5xl font-display font-bold text-white">Crafting Digital <br><span class="text-gradient">Excellence</span></h3>
+                    <p class="text-zinc-400 text-lg leading-relaxed">With over a year of intense hands-on experience, I specialize in building end-to-end web applications. My approach combines technical precision with creative design thinking to deliver products that not only work flawlessly but also look stunning.</p>
+                    <div class="grid grid-cols-3 gap-4 pt-4">
+                        <div class="p-5 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors">
+                            <h4 class="text-3xl font-black text-white mb-1">10+</h4>
+                            <p class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Projects</p>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors">
+                            <h4 class="text-3xl font-black text-white mb-1">5</h4>
+                            <p class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Static</p>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors">
+                            <h4 class="text-3xl font-black text-white mb-1">5</h4>
+                            <p class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Dynamic</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PORTFOLIOS — SEPARATE SECTIONS ===== -->
+        <section id="portfolios" class="relative">
+
+            <!-- Section Header -->
+            <div class="max-w-7xl mx-auto px-6 pt-24 pb-12 reveal">
+                <div class="text-center">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-brand-400 mb-3">Selected Works</h2>
+                    <h3 class="text-4xl md:text-5xl font-display font-bold text-white">Featured <span class="text-gradient">Projects</span></h3>
+                    <p class="text-zinc-500 mt-4 max-w-lg mx-auto">A curated collection of my work, divided into static and dynamic categories.</p>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!--          STATIC PROJECTS SECTION             -->
+            <!-- ============================================ -->
+            <div class="relative py-16 overflow-hidden">
+                <!-- Subtle cyan background accent -->
+                <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+                
+                <div class="max-w-7xl mx-auto px-6 relative z-10">
+                    <!-- Static Section Header -->
+                    <div class="flex items-center gap-5 mb-10 reveal">
+                        <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                            <i class="fa-solid fa-file-lines text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <h4 class="text-2xl md:text-3xl font-display font-bold text-white">Landing Pages</h4>
+                                <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold">9 Projects</span>
+                            </div>
+                            <p class="text-zinc-500 text-sm mt-1">Landing pages, UI kits, design systems & more</p>
+                        </div>
+                    </div>
+
+                    <!-- Static Grid -->
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="static-grid">
+                        
+                        <div class="stagger-card card-static project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Web development.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-static px-2 py-1 text-[10px] uppercase font-bold rounded">Page</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">HTML/CSS</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Crypto Landing Page</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Static landing page with scroll animations</p>
+                                    <a href="#" class="live-demo-btn mt-3 px-5 py-2 bg-cyan-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stagger-card card-static project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Mashroom.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-static px-2 py-1 text-[10px] uppercase font-bold rounded">Page</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Figma</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Modern UI Kit</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Complete design system & components</p>
+                                    <a href="#" class="live-demo-btn mt-3 px-5 py-2 bg-cyan-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stagger-card card-static project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Furniture.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-static px-2 py-1 text-[10px] uppercase font-bold rounded">Page</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Tailwind</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Furniture Showcase</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Static product catalog website</p>
+                                    <a href="#" class="live-demo-btn mt-3 px-5 py-2 bg-cyan-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stagger-card card-static project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Slash.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-static px-2 py-1 text-[10px] uppercase font-bold rounded">Page</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Illustrator</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Brand Identity</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Logo & brand guideline design</p>
+                                    <a href="#" class="live-demo-btn mt-3 px-5 py-2 bg-cyan-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stagger-card card-static project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Carss.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-static px-2 py-1 text-[10px] uppercase font-bold rounded">Page</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">WordPress</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Corporate Blog</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Static blog with custom theme</p>
+                                    <a href="#" class="live-demo-btn mt-3 px-5 py-2 bg-cyan-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stagger-card card-dynamic project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Pens.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-dynamic px-2 py-1 text-[10px] uppercase font-bold rounded">Page</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">MERN</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Social Media App</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Real-time feed with auth system</p>
+                                    <a href="#" class="live-demo-btn mt-3 px-5 py-2 bg-pink-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stagger-card card-dynamic project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Login.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-dynamic px-2 py-1 text-[10px] uppercase font-bold rounded">Page</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Python</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">AI</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">AI Chatbot</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Intelligent chat with AI backend</p>
+                                    <a href="#" class="live-demo-btn mt-3 px-5 py-2 bg-pink-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stagger-card card-dynamic project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Abaya.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-dynamic px-2 py-1 text-[10px] uppercase font-bold rounded">page</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Flutter</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Firebase</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Fitness Tracker</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">App with real-time data sync</p>
+                                    <a href="#" class="live-demo-btn mt-3 px-5 py-2 bg-pink-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stagger-card card-dynamic project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Sandles.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-dynamic px-2 py-1 text-[10px] uppercase font-bold rounded">pages</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">React</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Node.js</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Travel Booking App</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Static booking with API integration</p>
+                                    <a href="#" class="live-demo-btn mt-3 px-5 py-2 bg-pink-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Divider -->
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="section-divider my-4"></div>
+                <!-- Center label on divider -->
+                <div class="relative -mt-5 flex justify-center">
+                    <span class="px-4 py-1.5 bg-dark-950 text-zinc-600 text-[10px] uppercase tracking-[0.2em] font-bold rounded-full border border-white/5">vs</span>
+                </div>
+            </div>
+            
+
+            <!-- ============================================ -->
+            <!--         DYNAMIC PROJECTS SECTION             -->
+            <!-- ============================================ -->
+            <div class="relative py-16 overflow-hidden">
+                <!-- Subtle pink background accent -->
+                <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-pink-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+                <div class="max-w-7xl mx-auto px-6 relative z-10">
+                    <!-- Dynamic Section Header -->
+                    <div class="flex items-center gap-5 mb-10 reveal">
+                        <div class="w-14 h-14 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
+                            <i class="fa-solid fa-bolt text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <h4 class="text-2xl md:text-3xl font-display font-bold text-white">Static Projects</h4>
+                                <span class="px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs font-bold">5 Projects</span>
+                            </div>
+                            <p class="text-zinc-500 text-sm mt-1">Web apps, dashboards, SaaS & real-time systems</p>
+                        </div>
+                    </div>
+                    
+
+                    <!-- Dynamic Grid -->
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="dynamic-grid">
+
+                        <div class="stagger-card card-dynamic project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Calculator.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-dynamic px-2 py-1 text-[10px] uppercase font-bold rounded">Static</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Next.js</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Stripe</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">SaaS Dashboard</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Full-stack app with payment integration</p>
+                                    <a href="Calculator%20Update.html" class="live-demo-btn mt-3 px-5 py-2 bg-pink-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stagger-card card-dynamic project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Capture port.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-dynamic px-2 py-1 text-[10px] uppercase font-bold rounded">Static</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Next.js</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Stripe</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">SaaS Dashboard</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Full-stack app with payment integration</p>
+                                    <a href="Chai%20portfolio.html" class="live-demo-btn mt-3 px-5 py-2 bg-pink-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stagger-card card-dynamic project-card group relative rounded-2xl overflow-hidden bg-dark-800 border border-white/10 cursor-pointer">
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                <img src="Kitchen Demo.PNG" class="w-full h-full object-cover">
+                                <div class="overlay absolute inset-0 flex flex-col justify-end p-6">
+                                    <div class="flex gap-2 mb-2">
+                                        <span class="badge-dynamic px-2 py-1 text-[10px] uppercase font-bold rounded">Static</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Next.js</span>
+                                        <span class="px-2 py-1 bg-black/60 backdrop-blur text-[10px] uppercase font-bold text-white rounded">Stripe</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">SaaS Dashboard</h4>
+                                    <p class="text-zinc-400 text-xs mt-1">Full-stack app with payment integration</p>
+                                    <a href="Kitchen.html" class="live-demo-btn mt-3 px-5 py-2 bg-pink-500 text-white text-xs font-bold rounded-lg inline-flex items-center gap-2">Live Demo <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ===== SERVICES ===== -->
+        <section id="services" class="py-24">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16 reveal">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-brand-400 mb-2">My Services</h2>
+                    <h3 class="text-4xl md:text-5xl font-display font-bold text-white">What I <span class="text-gradient">Do Best</span></h3>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="reveal glass p-8 rounded-3xl border border-white/5 hover:border-brand-500/50 transition-all duration-300 group hover:-translate-y-2">
+                        <div class="w-16 h-16 bg-brand-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-500 transition-colors text-brand-400 group-hover:text-white"><i class="fa-solid fa-code text-3xl"></i></div>
+                        <h4 class="text-2xl font-bold text-white mb-4">Web Development</h4>
+                        <p class="text-zinc-400 leading-relaxed">Full-stack development using React, Node.js, and Next.js to build fast, secure, and scalable websites.</p>
+                    </div>
+                    <div class="reveal glass p-8 rounded-3xl border border-white/5 hover:border-brand-500/50 transition-all duration-300 group hover:-translate-y-2">
+                        <div class="w-16 h-16 bg-pink-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-pink-500 transition-colors text-pink-400 group-hover:text-white"><i class="fa-solid fa-pen-nib text-3xl"></i></div>
+                        <h4 class="text-2xl font-bold text-white mb-4">UI/UX Design</h4>
+                        <p class="text-zinc-400 leading-relaxed">Creating intuitive and visually stunning user interfaces with focus on UX, accessibility, and modern design principles.</p>
+                    </div>
+                    <div class="reveal glass p-8 rounded-3xl border border-white/5 hover:border-brand-500/50 transition-all duration-300 group hover:-translate-y-2">
+                        <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500 transition-colors text-blue-400 group-hover:text-white"><i class="fa-solid fa-rocket text-3xl"></i></div>
+                        <h4 class="text-2xl font-bold text-white mb-4">SEO & Marketing</h4>
+                        <p class="text-zinc-400 leading-relaxed">Optimizing your digital presence to rank higher on search engines and reach your target audience effectively.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CONTACT ===== -->
+        <section id="contact" class="py-24 relative bg-[#0a0a12]">
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+                <div class="text-center mb-16 reveal">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-brand-400 mb-2">Get In Touch</h2>
+                    <h3 class="text-4xl md:text-5xl font-display font-bold text-white">Let's Start a <span class="text-gradient">Project</span></h3>
+                </div>
+                <div class="grid lg:grid-cols-5 gap-12">
+                    <div class="lg:col-span-2 space-y-6 reveal">
+                        <div class="glass p-6 rounded-2xl border border-white/10 flex items-start gap-4 hover:border-brand-500/50 transition-colors">
+                            <div class="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center flex-shrink-0 text-brand-400"><i class="fa-solid fa-envelope text-xl"></i></div>
+                            <div><h4 class="text-white font-bold mb-1">Email Me</h4><p class="text-zinc-400 text-sm">farinaishfaq026@gmail.com</p><p class="text-zinc-500 text-xs mt-1">I reply within 24 hours</p></div>
+                        </div>
+                        <div class="glass p-6 rounded-2xl border border-white/10 flex items-start gap-4 hover:border-brand-500/50 transition-colors">
+                            <div class="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center flex-shrink-0 text-brand-400"><i class="fa-solid fa-phone text-xl"></i></div>
+                            <div><h4 class="text-white font-bold mb-1">Call Me</h4><p class="text-zinc-400 text-sm">+92 3315325486</p><p class="text-zinc-500 text-xs mt-1">Mon - Fri, 9am - 6pm</p></div>
+                        </div>
+                        <div class="glass p-6 rounded-2xl border border-white/10 flex items-start gap-4 hover:border-brand-500/50 transition-colors">
+                            <div class="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center flex-shrink-0 text-brand-400"><i class="fa-solid fa-location-dot text-xl"></i></div>
+                            <div><h4 class="text-white font-bold mb-1">Location</h4><p class="text-zinc-400 text-sm">BB 968 St no.02 Dokh Dalal, Rawalpindi</p><p class="text-zinc-500 text-xs mt-1">Open for remote work</p></div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3 reveal">
+                        <form id="contact-form" class="glass p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl shadow-black/50">
+                            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                                <div><label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Full Name</label><input type="text" id="inp-name" placeholder="John Doe" class="form-input w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-zinc-600 transition-all outline-none" required></div>
+                                <div><label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Email Address</label><input type="email" id="inp-email" placeholder="john@example.com" class="form-input w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-zinc-600 transition-all outline-none" required></div>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Project Type</label>
+                                    <div class="relative"><select class="form-input w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white appearance-none cursor-pointer outline-none"><option>Static Website</option><option>Dynamic Web App</option><option>UI/UX Design</option><option>Full-Stack Project</option></select><i class="fa-solid fa-chevron-down absolute right-4 top-4 text-zinc-500 pointer-events-none text-xs"></i></div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Budget Range</label>
+                                    <div class="relative"><select class="form-input w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white appearance-none cursor-pointer outline-none"><option>$500 - $1,000</option><option>$1,000 - $5,000</option><option>$5,000+</option></select><i class="fa-solid fa-chevron-down absolute right-4 top-4 text-zinc-500 pointer-events-none text-xs"></i></div>
+                                </div>
+                            </div>
+                            <div class="mb-8"><label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Message</label><textarea rows="5" id="inp-msg" placeholder="Tell me about your project details..." class="form-input w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-zinc-600 transition-all outline-none resize-none" required></textarea></div>
+                            <button type="submit" id="submit-btn" class="w-full py-4 bg-gradient-to-r from-brand-600 to-pink-600 text-white font-bold text-sm rounded-xl hover:opacity-90 transition-all text-center shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2">
+                                <span id="btn-text">Send Message</span><i class="fa-regular fa-paper-plane" id="btn-icon"></i><i class="fa-solid fa-spinner fa-spin hidden" id="btn-spin"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="bg-[#020203] border-t border-dark-800/50 pt-16 pb-8 relative overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-brand-900/10 rounded-full blur-[100px] pointer-events-none"></div>
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg"><img src="Logo.png"></div>
+                            <span class="text-white font-display font-bold text-xl">Farina Verse</span>
+                        </div>
+                        <p class="text-zinc-500 text-sm leading-relaxed">Building digital products, brands, and experiences. Based in Rawalpindi, working globally.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-6">Navigation</h4>
+                        <ul class="space-y-3">
+                            <li><a href="#hero" class="text-zinc-500 text-sm hover:text-white transition-colors">Home</a></li>
+                            <li><a href="#about" class="text-zinc-500 text-sm hover:text-white transition-colors">About Me</a></li>
+                            <li><a href="#portfolios" class="text-zinc-500 text-sm hover:text-white transition-colors">Portfolios</a></li>
+                            <li><a href="#services" class="text-zinc-500 text-sm hover:text-white transition-colors">Services</a></li>
+                            <li><a href="#contact" class="text-zinc-500 text-sm hover:text-white transition-colors">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-6">Contact</h4>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-envelope text-brand-500 mt-1"></i><a href="mailto:farinaishfaq026@gmail.com" class="text-zinc-500 text-sm hover:text-white transition-colors">farinaishfaq026@gmail.com</a></li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-location-dot text-brand-500 mt-1"></i><span class="text-zinc-500 text-sm">BB 968 St no.02 Dokh Dalal Rwp</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-6">Follow Me</h4>
+                        <div class="grid grid-cols-4 gap-3">
+                            <a href="https://www.tiktok.com/@farinaishfaq?_r=1&_t=ZS-96TLgkvjlOX" class="social-icon" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                            <a href="https://www.instagram.com/farina_verse?utm_source=qr&igsh=MWM0dXJsYWNiN3dmaQ==" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="https://www.linkedin.com/in/sabahat-ishfaq-222881210?utm_source=share_via&utm_content=profile&utm_medium=member_android" class="social-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                            <a href=" https://share.google/WQNTso4aZOzZGpaTR" class="social-icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                            <a href="https://www.fiverr.com/pe/DBpGgea" class="social-icon" aria-label="Fiverr"><i class="fa-solid fa-bag-shopping"></i></a>
+                            <a href="#" class="social-icon" aria-label="Upwork"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-dark-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-zinc-600 text-xs text-center md:text-left">© 2026 Farina Verse. All rights reserved.</p>
+                    <div class="flex gap-6">
+                        <a href="#" class="text-zinc-600 text-xs hover:text-zinc-400 transition-colors">Privacy Policy</a>
+                        <a href="#" class="text-zinc-600 text-xs hover:text-zinc-400 transition-colors">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // ===== STAGGERED CARD ANIMATIONS ON SCROLL =====
+        const staggerObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const cards = entry.target.querySelectorAll('.stagger-card');
+                    cards.forEach((card, i) => {
+                        setTimeout(() => {
+                            card.classList.add('visible');
+                        }, i * 120);
+                    });
+                    staggerObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('#static-grid, #dynamic-grid').forEach(grid => {
+            staggerObserver.observe(grid);
+        });
+
+        // ===== NAVBAR SCROLL EFFECT =====
+        const nav = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 80) {
+                nav.style.background = 'rgba(3, 0, 20, 0.88)';
+                nav.style.borderBottom = '1px solid rgba(255,255,255,0.06)';
+                nav.style.backdropFilter = 'blur(20px)';
+            } else {
+                nav.style.background = 'rgba(19, 19, 31, 0.6)';
+                nav.style.borderBottom = 'none';
+                nav.style.backdropFilter = 'blur(16px)';
+            }
+        });
+
+        // ===== CONTACT FORM =====
+        const form = document.getElementById('contact-form');
+        const toast = document.getElementById('toast');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        const btnSpin = document.getElementById('btn-spin');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('inp-name');
+            const email = document.getElementById('inp-email');
+            const msg = document.getElementById('inp-msg');
+
+            [name, email, msg].forEach(f => f.style.borderColor = '');
+            let err = false;
+            if (!name.value.trim()) { name.style.borderColor = '#ef4444'; err = true; }
+            if (!email.value.trim() || !email.value.includes('@')) { email.style.borderColor = '#ef4444'; err = true; }
+            if (!msg.value.trim()) { msg.style.borderColor = '#ef4444'; err = true; }
+            if (err) return;
+
+            btnText.textContent = 'Sending...';
+            btnIcon.classList.add('hidden');
+            btnSpin.classList.remove('hidden');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+
+            setTimeout(() => {
+                btnText.textContent = 'Sent!';
+                btnSpin.classList.add('hidden');
+                btnIcon.classList.remove('hidden');
+                btnIcon.className = 'fa-solid fa-check';
+                submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                toast.classList.add('show');
+
+                setTimeout(() => {
+                    form.reset();
+                    btnText.textContent = 'Send Message';
+                    btnIcon.className = 'fa-regular fa-paper-plane';
+                    submitBtn.style.background = '';
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '';
+                    toast.classList.remove('show');
+                }, 3500);
+            }, 1500);
+        });
+
+        document.querySelectorAll('.form-input').forEach(inp => {
+            inp.addEventListener('focus', () => { inp.style.borderColor = ''; });
+        });
+
+        // ===== SMOOTH SCROLL =====
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', function(e) {
+                const t = document.querySelector(this.getAttribute('href'));
+                if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            });
+        });
+    </script>
+</body>
+</html>
